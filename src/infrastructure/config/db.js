@@ -9,6 +9,7 @@ export const pool = new Pool({
   database: ENV.DB.NAME,
   password: ENV.DB.PASSWORD,
   port: ENV.DB.PORT,
+  ssl: { rejectUnauthorized: false }, // ✅ Required for Render
 });
 
 pool
