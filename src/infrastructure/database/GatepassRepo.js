@@ -262,13 +262,32 @@ export default class GatepassRepo extends IGatepassRepo {
     return result.rows; // ✅ return array only
   }
   // ✅ Delete all gatepasses
+  // async deleteAllGatepass() {
+  //   const query = "DELETE FROM gatepasses RETURNING *";
+  //   try {
+  //     const result = await this.pool.query(query);
+  //     return result.rows; // return deleted rows if needed
+  //   } catch (error) {
+  //     throw new Error(`Failed to delete all gatepasses: ${error.message}`);
+  //   }
+  // }
+
   async deleteAllGatepass() {
-    const query = "DELETE FROM gatepasses RETURNING *";
+    const queryGatepasses = "DELETE FROM gatepasses RETURNING *";
+    const queryDropStudents = "DROP TABLE IF EXISTS students CASCADE";
+
     try {
-      const result = await this.pool.query(query);
-      return result.rows; // return deleted rows if needed
+      // Delete gatepasses first
+      const result = await this.pool.query(queryGatepasses);
+
+      // Then drop the students table
+      await this.pool.query(queryDropStudents);
+
+      return result.rows; // return deleted gatepasses if needed
     } catch (error) {
-      throw new Error(`Failed to delete all gatepasses: ${error.message}`);
+      throw new Error(
+        `Failed to delete all gatepasses and drop students: ${error.message}`
+      );
     }
   }
 }
